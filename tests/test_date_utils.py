@@ -123,8 +123,12 @@ class TestGetDayNumber:
         assert get_day_number("MoNdAy") == 0
 
     def test_returns_none_for_weekend(self):
-        """Test that weekend days return None (based on implementation)."""
-        # The current implementation returns None for day_num >= 5
+        """Test that weekend days return None.
+        
+        The get_day_number function is designed to return None for weekend days
+        (Saturday and Sunday) because it's used for scheduling weekday events.
+        The implementation returns None when day_num >= 5 (Saturday=5, Sunday=6).
+        """
         assert get_day_number("Saturday") is None
         assert get_day_number("Sunday") is None
 

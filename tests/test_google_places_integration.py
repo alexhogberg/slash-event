@@ -8,10 +8,13 @@ from lib.api.google_places import GooglePlaces
 # Load environment variables from .env file
 load_dotenv()
 
+# Constant for test/mock API key detection
+TEST_API_KEY_VALUES = ["test_api_key", "fake_api_key", "mock_api_key", ""]
 
-# Skip all integration tests if the API key is not set or if running in CI
+# Skip all integration tests if the API key is not set or appears to be a test value
 requires_google_api = pytest.mark.skipif(
-    not os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_PLACES_API_KEY") == "test_api_key",
+    not os.getenv("GOOGLE_PLACES_API_KEY")
+    or os.getenv("GOOGLE_PLACES_API_KEY") in TEST_API_KEY_VALUES,
     reason="Requires GOOGLE_PLACES_API_KEY environment variable with a valid API key",
 )
 
