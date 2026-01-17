@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from dotenv import load_dotenv
 
@@ -5,6 +7,16 @@ from lib.api.google_places import GooglePlaces
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Constant for test/mock API key detection
+TEST_API_KEY_VALUES = ["test_api_key", "fake_api_key", "mock_api_key", ""]
+
+# Skip all integration tests if the API key is not set or appears to be a test value
+requires_google_api = pytest.mark.skipif(
+    not os.getenv("GOOGLE_PLACES_API_KEY")
+    or os.getenv("GOOGLE_PLACES_API_KEY") in TEST_API_KEY_VALUES,
+    reason="Requires GOOGLE_PLACES_API_KEY environment variable with a valid API key",
+)
 
 
 @pytest.fixture
@@ -15,6 +27,7 @@ def google_places():
     return GooglePlaces()
 
 
+@requires_google_api
 def test_get_suggestions_valid_area(google_places):
     """
     Test the get_suggestions method with a valid area.
@@ -29,6 +42,7 @@ def test_get_suggestions_valid_area(google_places):
         assert suggestion.rating is not None, "Place rating is missing"
 
 
+@requires_google_api
 def test_get_suggestions_invalid_area(google_places):
     """
     Test the get_suggestions method with an invalid area.
@@ -38,6 +52,7 @@ def test_get_suggestions_invalid_area(google_places):
     assert len(suggestions) == 0, "Suggestions should be empty for an invalid area"
 
 
+@requires_google_api
 def test_get_place_information(google_places):
     """
     Test the get_place_information method with a valid place ID.
@@ -50,6 +65,7 @@ def test_get_place_information(google_places):
     assert place.rating is not None, "Place rating is missing"
 
 
+@requires_google_api
 def test_get_place_suggestions(google_places):
     """
     Test the get_place_suggestions method with a valid place name.

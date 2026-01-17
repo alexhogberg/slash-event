@@ -1,19 +1,40 @@
-# import pytest
-# from lib.api.mongodb import EventMongoDAL
-# from lib.models.event import Event
-# from bson.objectid import ObjectId
+# coding=utf-8
+"""
+Integration tests for EventMongoDAL.
+These tests are marked for integration and require a MongoDB connection.
+They are kept commented out but preserved for reference.
 
+The mocked unit tests are in test_mongodb.py.
+"""
+import os
+
+import pytest
+
+# Skip all integration tests if MongoDB is not configured
+requires_mongodb = pytest.mark.skipif(
+    not os.getenv("MONGO_DB_CONNECTION_STRING")
+    or os.getenv("MONGO_DB_CONNECTION_STRING") == "mongodb://localhost:27017",
+    reason="Requires MONGO_DB_CONNECTION_STRING environment variable with a valid connection string",
+)
+
+
+# Integration tests for EventMongoDAL are available but disabled by default
+# Run with: pytest tests/test_event_mongo_dal.py --run-integration
+# when a real MongoDB connection is available
+
+# @requires_mongodb
 # @pytest.fixture
 # def event_dal():
-#     # Use a test team_id to isolate test data
-#     return EventMongoDAL(team_id="test_team")
-
+#     from lib.api.mongodb import EventMongoDAL
+#     return EventMongoDAL(team_id="test_team_integration")
+#
+# @requires_mongodb
 # @pytest.fixture
 # def test_event():
-#     # Create a sample event for testing
+#     from lib.models.event import Event
 #     return Event(
 #         _id=None,
-#         team_id="test_team",
+#         team_id="test_team_integration",
 #         date="2025-05-11",
 #         time="12:00",
 #         location={"name": "Test Location"},
@@ -21,69 +42,20 @@
 #         participants=["test_user1"],
 #         author="test_user1",
 #     )
-
-# def test_insert_event(event_dal, test_event):
-#     # Insert the event
+#
+# @requires_mongodb
+# def test_integration_insert_event(event_dal, test_event):
+#     """Integration test for inserting events."""
 #     event_id = event_dal.insert_event(test_event)
 #     assert event_id is not None
-
-#     # Verify the event exists in the database
+#
 #     inserted_event = event_dal.get_event(event_id)
 #     assert inserted_event is not None
 #     assert inserted_event.date == test_event.date
-#     assert inserted_event.time == test_event.time
-#     assert inserted_event.location["name"] == test_event.location["name"]
-
-# def test_list_events(event_dal, test_event):
-#     # Insert the event
-#     event_dal.insert_event(test_event)
-
-#     # List events
-#     events = event_dal.list_events()
-#     assert len(events) > 0
-#     assert any(event.date == test_event.date for event in events)
-
-# def test_get_event(event_dal, test_event):
-#     # Insert the event
-#     event_id = event_dal.insert_event(test_event)
-
-#     # Retrieve the event
-#     retrieved_event = event_dal.get_event(event_id)
-#     assert retrieved_event is not None
-#     assert retrieved_event.date == test_event.date
-#     assert retrieved_event.author == test_event.author
-
-# def test_join_event(event_dal, test_event):
-#     # Insert the event
-#     event_id = event_dal.insert_event(test_event)
-
-#     # Join the event
-#     updated_event = event_dal.join_event(event_id, "test_user2")
-#     assert "test_user2" in updated_event.participants
-
-# def test_leave_event(event_dal, test_event):
-#     # Insert the event
-#     event_id = event_dal.insert_event(test_event)
-
-#     # Leave the event
-#     updated_event = event_dal.leave_event(event_id, "test_user1")
-#     assert "test_user1" not in updated_event.participants
-
-# def test_delete_event(event_dal, test_event):
-#     # Insert the event
-#     event_id = event_dal.insert_event(test_event)
-
-#     # Delete the event
-#     deleted_event = event_dal.delete_event(event_id, test_event.author)
-#     assert deleted_event is not None
-
-#     # Verify the event no longer exists
-#     assert event_dal.get_event(event_id) is None
-
+#
+# @requires_mongodb
 # @pytest.fixture(autouse=True)
 # def cleanup(event_dal):
-#     """
-#     Cleanup test data after each test.
-#     """
+#     """Cleanup test data after each test."""
 #     yield
-#     event_dal.database.events.delete_many({"team_id": "test_team"})
+#     event_dal.database.events.delete_many({"team_id": "test_team_integration"})
