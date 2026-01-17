@@ -8,38 +8,72 @@ The command is built using Slack Bolt for Python and deployed with Fly.io for a 
 
 ## Prerequisites
 You need the following to deploy the solution:
-* A Fly.io account
+* Docker and Docker Compose (for local development)
+* A Fly.io account (for production deployment)
 * A Slack workspace where you have admin privileges
 * A Google Places API key
-* A MongoDB Atlas database (or any MongoDB instance)
 
 ### Services
 The services used are:
-* **MongoDB** - Used for storing information about the events
+* **MongoDB** - Used for storing information about the events (included in Docker Compose for local development)
 * **Google Places API** - Used for suggesting event locations
 * **Slack Bolt** - Used for handling Slack commands and events
 
 ## Installation
-Run `./setup.sh` to set up a local virtual environment with all dependencies. After that, run `./local.sh` to start the app locally.
 
-### Configuration
-The configuration is stored in the `.env` file. The file should look as follows:
-```env
-SLACK_AUTH_KEY=
-SLACK_CHANNEL_NAME=
+### Using Docker Compose (Recommended)
+The easiest way to run the application locally is with Docker Compose, which includes MongoDB:
 
-SLACK_BOT_TOKEN=
-SLACK_APP_TOKEN=
+1. Copy the example environment file and configure it:
+   ```bash
+   cp .env.example .env
+   ```
 
-MONGO_DB_CONNECTION_STRING=
+2. Edit `.env` with your Slack and Google Places API credentials.
 
-GOOGLE_PLACES_API_KEY=
+3. Start the application with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
+This will start both the application and a MongoDB instance. The app will be available at `http://localhost:3000`.
+
+To stop the services:
+```bash
+docker-compose down
 ```
 
-- `SLACK_AUTH_KEY`: The Slack bot key retrieved from the Slack Bot API.
-- `SLACK_CHANNEL_NAME`: The Slack channel where announcements should be sent. The bot must be invited to this channel.
-- `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN`: Tokens used to connect to the Slack APIs. These are generated when you create a Slack app.
-- `MONGO_DB_CONNECTION_STRING`: The connection string for your MongoDB instance.
+To stop and remove all data (including MongoDB data):
+```bash
+docker-compose down -v
+```
+
+### Manual Setup (Without Docker)
+Run `./setup.sh` to set up a local virtual environment with all dependencies. After that, run `./local.sh` to start the app locally. Note: You will need to provide your own MongoDB instance.
+
+### Configuration
+The configuration is stored in the `.env` file. Copy `.env.example` to `.env` and fill in the values:
+```bash
+cp .env.example .env
+```
+
+The file should contain:
+```env
+SLACK_CLIENT_ID=your_slack_client_id
+SLACK_CLIENT_SECRET=your_slack_client_secret
+SLACK_SIGNING_SECRET=your_slack_signing_secret
+SLACK_APP_TOKEN=xapp-your-app-token
+
+# For local development with Docker Compose:
+MONGO_DB_CONNECTION_STRING=mongodb://mongodb:27017/events
+
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+```
+
+- `SLACK_CLIENT_ID` and `SLACK_CLIENT_SECRET`: OAuth credentials from your Slack App configuration.
+- `SLACK_SIGNING_SECRET`: Used to verify requests from Slack.
+- `SLACK_APP_TOKEN`: App-level token for Socket Mode (starts with `xapp-`).
+- `MONGO_DB_CONNECTION_STRING`: Connection string for MongoDB. Use `mongodb://mongodb:27017/events` for Docker Compose, or your MongoDB Atlas connection string for production.
 - `GOOGLE_PLACES_API_KEY`: Retrieved from the Google Developers Console.
 
 ### Deployment

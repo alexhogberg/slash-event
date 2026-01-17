@@ -10,3 +10,20 @@ services:
     env_file:
       - .env  # Load environment variables from the .env file
     command: ["python", "bolt.py"]
+    depends_on:
+      - mongodb
+    volumes:
+      - app-data:/app/data
+
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"  # Expose MongoDB on port 27017
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: events
+
+volumes:
+  mongodb-data:
+  app-data:
